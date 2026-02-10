@@ -1,3 +1,4 @@
+
 /**
  * OWASP Benchmark Project v1.2
  *
@@ -18,6 +19,8 @@
 package org.owasp.benchmark.testcode;
 
 import java.io.IOException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -48,9 +51,11 @@ public class BenchmarkTest02451 extends HttpServlet {
         String bar = doSomething(request, param);
 
         try {
-            String sql = "SELECT * from USERS where USERNAME='foo' and PASSWORD='" + bar + "'";
+            String sql = "SELECT * from USERS where USERNAME='foo' and PASSWORD=?";
 
-            org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.execute(sql);
+            PreparedStatement statement = org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.getConnection().prepareStatement(sql);
+            statement.setString(1, bar);
+            statement.execute();
             response.getWriter()
                     .println(
                             "No results can be displayed for query: "
@@ -58,7 +63,7 @@ public class BenchmarkTest02451 extends HttpServlet {
                                     + "<br>"
                                     + " because the Spring execute method doesn't return results.");
 
-        } catch (org.springframework.dao.DataAccessException e) {
+        } catch (org.springframework.dao.DataAccessException | SQLException e) {
             if (org.owasp.benchmark.helpers.DatabaseHelper.hideSQLErrors) {
                 response.getWriter().println("Error processing request.");
             } else throw new ServletException(e);
