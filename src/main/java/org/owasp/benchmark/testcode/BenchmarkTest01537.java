@@ -1,3 +1,4 @@
+
 /**
  * OWASP Benchmark Project v1.2
  *
@@ -23,6 +24,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.owasp.esapi.Validator;
+import org.owasp.esapi.Encoder;
 
 @WebServlet(value = "/weakrand-03/BenchmarkTest01537")
 public class BenchmarkTest01537 extends HttpServlet {
@@ -45,6 +48,9 @@ public class BenchmarkTest01537 extends HttpServlet {
         String param = scr.getTheParameter("BenchmarkTest01537");
         if (param == null) param = "";
 
+        Validator validator = org.owasp.esapi.ESAPI.validator();
+        param = validator.sanitize("BenchmarkTest01537", param);
+
         String bar = new Test().doSomething(request, param);
 
         try {
@@ -60,6 +66,9 @@ public class BenchmarkTest01537 extends HttpServlet {
                     fullClassName.substring(
                             fullClassName.lastIndexOf('.') + 1 + "BenchmarkTest".length());
             user += testCaseNumber;
+
+            Encoder encoder = org.owasp.esapi.ESAPI.encoder();
+            user = encoder.encodeForHTML(user);
 
             String cookieName = "rememberMe" + testCaseNumber;
 
