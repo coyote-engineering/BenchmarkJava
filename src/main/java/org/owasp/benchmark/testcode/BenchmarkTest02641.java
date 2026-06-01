@@ -1,3 +1,4 @@
+
 /**
  * OWASP Benchmark Project v1.2
  *
@@ -69,11 +70,12 @@ public class BenchmarkTest02641 extends HttpServlet {
 
         String bar = doSomething(request, param);
 
-        String sql = "SELECT * from USERS where USERNAME='foo' and PASSWORD='" + bar + "'";
+        String sql = "SELECT * from USERS where USERNAME='foo' and PASSWORD=?";
         try {
             java.util.List<String> results =
                     org.owasp.benchmark.helpers.DatabaseHelper.JDBCtemplate.query(
                             sql,
+                            new Object[] {bar},
                             new org.springframework.jdbc.core.RowMapper<String>() {
                                 @Override
                                 public String mapRow(java.sql.ResultSet rs, int rowNum)
